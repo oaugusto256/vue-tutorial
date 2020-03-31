@@ -1,13 +1,20 @@
 <template>
   <div id="app" class="small-container">
-    <h1>Employees</h1>
+    <div>
+      <h1>Vuex implementation</h1>
+      <Form />
+      <Display />
+    </div>
 
-    <employee-form @add:employee="addEmployee" />
-    <employee-table
-      :employees="employees"
-      @edit:employee="editEmployee"
-      @delete:employee="deleteEmployee"
-    />
+    <div>
+      <h1>Employees</h1>
+      <employee-form @add:employee="addEmployee" />
+      <employee-table
+        :employees="employees"
+        @edit:employee="editEmployee"
+        @delete:employee="deleteEmployee"
+      />
+    </div>
   </div>
 </template>
 
@@ -15,9 +22,14 @@
 import EmployeeTable from "@/components/EmployeeTable.vue";
 import EmployeeForm from "@/components/EmployeeForm.vue";
 
+import Form from "@/components/Form";
+import Display from "@/components/Display";
+
 export default {
   name: "App",
   components: {
+    Form,
+    Display,
     EmployeeForm,
     EmployeeTable
   },
@@ -50,6 +62,24 @@ export default {
         );
         const data = await response.json();
         this.employees = [...this.employees, data];
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    async editEmployee(id, updatedEmployee) {
+      try {
+        const response = await fetch(
+          `https://jsonplaceholder.typicode.com/users/${id}`,
+          {
+            method: "PUT",
+            body: JSON.stringify(updatedEmployee),
+            headers: { "Content-type": "application/json; charset=UTF-8" }
+          }
+        );
+        const data = await response.json();
+        this.employees = this.employees.map(employee =>
+          employee.id === id ? data : employee
+        );
       } catch (error) {
         console.error(error);
       }
